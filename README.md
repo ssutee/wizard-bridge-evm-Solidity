@@ -10,8 +10,11 @@ Plan: Beyond expectations Working with Oracle(Chainlink) and AMM(Uniswap) and de
 Projects have open source and that welcome all developers to build and work in decentralized teams are important and have a profoundly positive impact on communities and the digital world.
 ----------------------------------------------------------------------------------------------
 Open source
+
 SmartContract - ✅
+
 Front-end - *Coming soon..*
+
 SDK $ Framework - *Coming soon...*
 
 👩‍💻
