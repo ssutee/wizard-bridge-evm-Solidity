@@ -13,7 +13,7 @@ Projects have open source and that welcome all developers to build and work in d
 
 SmartContract (Solidity) - ✅
 
-SmartContract (Harthat) - *Coming soon..*
+SmartContract (Hardhat) - *Coming soon..*
 
 Front-end - *Coming soon..*
 
