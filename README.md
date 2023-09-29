@@ -15,7 +15,7 @@ SmartContract - ✅
 
 Front-end - *Coming soon..*
 
-SDK $ Framework - *Under development..*
+SDK & Framework - *Under development..*
 
 
 👩‍💻
