@@ -11,7 +11,9 @@ Projects have open source and that welcome all developers to build and work in d
 ----------------------------------------------------------------------------------------------
 **Open source**
 
-SmartContract - ✅
+SmartContract (Solidity) - ✅
+
+SmartContract (Harthat) - *Coming soon..*
 
 Front-end - *Coming soon..*
 
