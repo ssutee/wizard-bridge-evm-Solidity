@@ -24,4 +24,4 @@ SDK & Framework - *Under development..*
 
 Read more: https://wizard-bridge-evm.gitbook.io/docs
 
-Website (demo): https://testnet--wizard-bridge-evm.web.app
+Website (demo): https://testnet-wizardbridgeevm.web.app
