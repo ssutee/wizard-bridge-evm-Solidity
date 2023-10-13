@@ -12,7 +12,7 @@ pragma solidity ^0.8.0;
 //                                                                                                  █▀     ██                                                  
 //                                                                                                  ██████▀                                                    
 
-// Website (demo): https://testnet--wizard-bridge-evm.web.app
+// Website (demo): https://testnet-wizardbridgeevm.web.app
 // X: https://twitter.com/wizardbridgeevm
 // Docs: https://wizard-bridge-evm.gitbook.io/docs
 // Github: https://github.com/Wizard-Bridge-EVM
