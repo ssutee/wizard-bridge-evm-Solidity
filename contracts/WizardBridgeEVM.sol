@@ -22,9 +22,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "./IBridge.sol";
-import "./Structs.sol";
-import "./Utils.sol";
+
+import "hardhat/console.sol";
+
+import "./libraries/Structs.sol";
+import "./interfaces/IBridge.sol";
 
 contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
     mapping(address => Structs.WrappedToken) private _wrappedDetails;
@@ -44,7 +46,7 @@ contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
     // Checks if the message is siggned from a trusted signer
       // Fact Protocol Interface : (Proof of Message)
     modifier isTrustedSigner(bytes memory msgHash, bytes memory msgSigned) {
-        address signer = Utils.recoverSignerFromSignedMessage(
+        address signer = recoverSignerFromSignedMessage(
             msgHash,
             msgSigned
         );
@@ -64,7 +66,7 @@ contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
         bytes memory txHash
     ) {
         require(
-            Utils.hashArgs(
+            hashArgs(
                 chainId,
                 token,
                 amount,
@@ -72,7 +74,7 @@ contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
                 wTokenName,
                 wTokenSymbol,
                 timestamp
-            ) == Utils.bytesToTxHash(txHash),
+            ) == bytesToTxHash(txHash),
             "Bad args"
         );
         _;
@@ -171,7 +173,7 @@ contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
         args.txHash)
     {
         require(args.receiver == msg.sender, "Receiver and sender mismatch");
-        require(Utils.isContract(args.token), "Token does not exist");
+        require(isContract(args.token), "Token does not exist");
         require(!_usedTime[args.timestamp], "Error (Proof of Message): Duplicate or already used");
         require(!_usedTxns[args.txHash], "Error (Proof of Message): Duplicate or already used");
 
@@ -256,5 +258,115 @@ contract WizardBridgeEVM is IBridge, Ownable, ReentrancyGuard, Pausable {
 
     fallback() external payable {
         revert("Reverted");
+    }
+
+    function recoverSignerFromSignedMessage(
+        bytes memory hashedMessage,
+        bytes memory signedMessage
+    ) internal pure returns (address) {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+
+        (v, r, s) = splitSignature(signedMessage);
+
+        address signer = recoverSigner(hashedMessage, v, r, s);
+        require(signer != address(0), "ECDSA: invalid signature");
+
+        return signer;
+    }
+
+    function recoverSigner(
+        bytes memory hashedMessage,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal pure returns (address) {
+        bytes32 messageDigest = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hashedMessage)
+        );
+
+        return ecrecover(messageDigest, v, r, s);
+    }
+
+    function splitSignature(bytes memory sig)
+        internal
+        pure
+        returns (
+            uint8,
+            bytes32,
+            bytes32
+        )
+    {
+        require(sig.length == 65, "Invalid signature length");
+
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+
+        assembly {
+            // first 32 bytes, after the length prefix
+            r := mload(add(sig, 32))
+            // second 32 bytes
+            s := mload(add(sig, 64))
+            // final byte (first byte of the next 32 bytes)
+            v := byte(0, mload(add(sig, 96)))
+        }
+
+        return (v, r, s);
+    }
+
+    function hashArgs(
+        uint32 sourceChain,
+        address nativeToken,
+        uint256 amount,
+        address receiver,
+        string memory wTokenName,
+        string memory wTokenSymbol,
+        uint256 timestamp
+    ) internal view returns (bytes32 hash) {
+        hash =        
+            keccak256(
+                abi.encodePacked(
+                    sourceChain,
+                    nativeToken,
+                    amount,
+                    receiver,
+                    wTokenName,
+                    wTokenSymbol,
+                    timestamp
+                )
+            );
+        console.logBytes32(hash);
+    }
+
+    function bytesToAddress(bytes memory bys)
+        internal
+        pure
+        returns (address addr)
+    {
+        assembly {
+            addr := mload(add(bys, 20))
+        }
+    }
+
+    function bytesToTxHash(bytes memory bys)
+        internal
+        pure
+        returns (bytes32 txHash)
+    {
+        assembly {
+            txHash := mload(add(bys, 32))
+        }
+    }
+
+    function isContract(address addr) internal view returns (bool) {
+        uint256 size;
+
+        assembly {
+            size := extcodesize(addr)
+        }
+
+        return size > 0;
     }
 }

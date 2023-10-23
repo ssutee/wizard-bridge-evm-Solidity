@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "./Structs.sol";
+import "../libraries/Structs.sol";
 
 interface IBridge {
     // The bridgeOut (lock) function is used for sending a token from its source chain to any target chain.
